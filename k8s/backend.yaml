@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: exam-backend
+  namespace: online-exam
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: exam-backend
+  template:
+    metadata:
+      labels:
+        app: exam-backend
+    spec:
+      containers:
+        - name: backend
+          image: online-examination-system-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5050
+          env:
+            - name: PORT
+              value: "5050"
+            - name: DB_USER
+              value: postgres
+            - name: DB_HOST
+              value: exam-db
+            - name: DB_NAME
+              value: examination_db
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: exam-db-secret
+                  key: POSTGRES_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: exam-app-secret
+                  key: JWT_SECRET
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: exam-backend
+  namespace: online-exam
+spec:
+  selector:
+    app: exam-backend
+  ports:
+    - port: 5050
+      targetPort: 5050
+  type: ClusterIP

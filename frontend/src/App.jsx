@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import "./index.css";
 
-const API = "http://localhost:5050";
+const API = "http://localhost:5051";
 
 const api = axios.create({
   baseURL: API
